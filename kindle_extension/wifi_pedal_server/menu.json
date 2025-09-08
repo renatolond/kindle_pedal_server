@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "name": "Wifi Pedal Server",
+      "priority": -1,
+      "items": [
+        {
+          "name": "* Toggle Server *",
+          "action": "./bin/toggle_server.sh",
+          "params": "",
+          "exitmenu": false,
+          "refresh": false,
+          "status": false,
+          "internal": "Toggle server on & off"
+        }
+      ]
+    }
+  ]
+}
+
