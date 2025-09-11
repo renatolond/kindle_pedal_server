@@ -1,7 +1,9 @@
 from network_manager import NetworkManager
-from pimoroni import RGBLED, Button
+from pimoroni import Button, PWMLED
 import uasyncio
 import urequests
+import time
+
 
 # Fill up the following vars with whatever you would like
 WIFI_COUNTRY = ""
@@ -14,31 +16,45 @@ FORWARD_ADDRESS = "{}/forward".format(SERVER_IP)
 BACKWARD_ADDRESS = "{}/backward".format(SERVER_IP)
 
 # set up the buttons, change according to your wiring
-button_a = Button(12, invert=True)
-button_b = Button(13, invert=True)
+FORWARD_BUTTON_PIN = 14
+BACKWARD_BUTTON_PIN = 10
+
+LED_PIN = 1
+LED_BLINK_TIME = 0.2
+
+forward_button = Button(FORWARD_BUTTON_PIN, invert=True)
+backward_button = Button(BACKWARD_BUTTON_PIN, invert=True)
+
+activity_led = PWMLED(LED_PIN)
+activity_led.off()
 
 def status_handler(mode, status, ip):
     status_text = "Creating AP..."
+    print(status_text)
     if status is not None:
         if status:
-            status_text = "SUCCESS! {}".format(status)
+            status_text = "SUCCESS! {}".format(ip)
         else:
             status_text = "Failed! {}".format(status)
+    print(status_text)
 
 # Set up AP
-network_manager = NetworkManager("be", status_handler=status_handler)
-network_manager.disconnect()
+network_manager = NetworkManager(WIFI_COUNTRY, status_handler=status_handler)
 
 # connect to wifi
 event_loop = uasyncio.get_event_loop()
 event_loop.run_until_complete(network_manager.access_point(WIFI_SSID, WIFI_CHANNEL, WIFI_PASSWORD))
 
 while True:
-   if button_a.is_pressed:
+   if forward_button.is_pressed:
+     activity_led.on()
      r = urequests.get(FORWARD_ADDRESS)
      r.close()
-   if button_b.is_pressed:
+     time.sleep(LED_BLINK_TIME)
+     activity_led.off()
+   if backward_button.is_pressed:
+     activity_led.on()
      r = urequests.get(BACKWARD_ADDRESS)
      r.close()
-
-
+     time.sleep(LED_BLINK_TIME)
+     activity_led.off()
