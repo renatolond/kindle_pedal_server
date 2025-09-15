@@ -6,12 +6,16 @@ class KindlePageHandler(BaseHTTPRequestHandler):
         subprocess.run("cat /mnt/us/extensions/wifi_pedal_server/bin/f.txt > /dev/input/event1", shell=True)
     def _backward(self):
         subprocess.run("cat /mnt/us/extensions/wifi_pedal_server/bin/b.txt > /dev/input/event1", shell=True)
+    def _wake_up(self):
+        subprocess.run("powerd_test -i", shell=True)
 
     def handle_backward(self):
         self._backward()
+        self._wake_up()
         return 1
     def handle_forward(self):
         self._forward()
+        self._wake_up()
         return 1
 
     def do_GET(self):
